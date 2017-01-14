@@ -19,7 +19,7 @@
 - [Functions](#functions)
 	- [Function arguments \(2 or less ideally\)](#function-arguments-2-or-less-ideally)
 	- [Functions should only be one level of abstraction](#functions-should-only-be-one-level-of-abstraction)
-	- [Remove duplicate code](#remove-duplicate-code)
+	- [Remove duplicate code \(DRY Don't repeat yourself\)](#remove-duplicate-code-dry-dont-repeat-yourself)
 	- [Set default objects with Object.assign](#set-default-objects-with-objectassign)
 	- [Don't use flags as function parameters](#dont-use-flags-as-function-parameters)
 	- [Avoid Side Effects](#avoid-side-effects)
@@ -28,7 +28,6 @@
 	- [Encapsulate conditionals](#encapsulate-conditionals)
 	- [Avoid negative conditionals](#avoid-negative-conditionals)
 	- [Avoid conditionals](#avoid-conditionals)
-	- [Prefer composition over inheritance](#prefer-composition-over-inheritance)
 	- [Avoid type-checking \(part 1\)](#avoid-type-checking-part-1)
 	- [Don't over-optimize](#dont-over-optimize)
 	- [Remove dead code](#remove-dead-code)
@@ -41,7 +40,7 @@
 	- [Interface Segregation Principle \(ISP\)](#interface-segregation-principle-isp)
 	- [Dependency Inversion Principle \(DIP\)](#dependency-inversion-principle-dip)
 	- [Prefer ES6 classes over ES5 plain functions](#prefer-es6-classes-over-es5-plain-functions)
-	- [Prefer composition over inheritance](#prefer-composition-over-inheritance-1)
+	- [Prefer composition over inheritance](#prefer-composition-over-inheritance)
 - [Testing](#testing)
 	- [Single concept per test](#single-concept-per-test)
 - [Concurrency](#concurrency)
@@ -62,16 +61,16 @@
 <a name="introduction"></a>
 ## Introduction
 
-Programming have a lot to do with language and abstraction and not only algorithms and technologies. It requires to step back often to see the big pictures and rethink on the complete system and not only about the part that we are currently doing.
+Programming have a lot to do with language and abstractions and not only algorithms and technologies. It requires to step back often to see the big picture and rethink our global approach instead of the part that we are currently doing.
 
-Paradoxically, programmers, we  are one of the most lazy guys of the world, we often make the mistake of thinking that is better to have a "beautiful" code than a useful one. Or that is better to ignore corner cases for maintaining the simplicity of the system, all for not taking the time for apply this refactor pattern of what we always speak.
+Paradoxically, we, programmers, are one of the most lazy guys in the world, we often make the mistake of thinking that is better to have a "beautiful" code than a useful one. Or that is better to ignore corner cases for maintaining the simplicity of the system, all for not taking the time for apply this refactor pattern of what we always speak.
 
-But don't worry! There is a solution for that! And is very simply to apply. Lets do it on the Russian style. Every time you are lazy one big Russian guy will comes and slaps you in the face. And remember, is Russian, it will hurt.
+But don't worry! There is a solution for that! And is very simply to apply. Lets do it on the Russian style. Every time you get lazy one big Russian guy will comes and slaps you in the face. And remember, is Russian, it will hurt.
 
 <a name="more-serious-introduction"></a>
 ## More serious introduction
 
-With Russian guy or not, when a code grows becomes impossible to maintain it in the head. Having ad-hoc conventions not defined is something only feasible when doing scripting and not when programming seriously. I read that a good metric for knowing if a code is goo is the WTFs/minute. Lets assume that our code don't have any WTF and is clean and easy to read, still we can do a lot of mistakes that are going to betray us when try to make the code grow.
+With Russian guy or not, when a code grows becomes impossible to maintain all in the head. Having ad-hoc conventions without write down definition is something only feasible when doing scripting and not when programming seriously. I read that a good metric for knowing if a code is goo is the WTFs/minute. Lets assume that our code don't have any WTF and is clean and easy to read, still we can do a lot of mistakes that are going to betray us when try to make the code grow.
 
 With this guide I explain some points that I think people usually do incorrectly in big projects. Mainly because they don't realize the responsibility of writing code that will work with thousands of lines of code more and therefore they apply some scripting tactics. Obviously this is my experience and I don't think is perfect or close to it, but it can helps to people that is not used to make projects of more than some thousands of lines of code. All points are explained and have the why, that means, I explain every point. Therefore it should be easy to know is that applies to your project or not.
 
@@ -104,7 +103,7 @@ let userIds = users.map(user => user.getId());
 
 <a name="use-es6-constants-when-variable-values-do-not-change"></a>
 ### Use ES6 constants when variable values do not change
-In the bad example, the variable can be changed. When you declare a constant, the variable should stay the same throughout the program.
+In the bad example, the variable can be changed. When you declare a constant, the variable should stay the same.
 
 **Bad:**
 ```javascript
@@ -120,7 +119,7 @@ const FIRST_US_PRESIDENT = "George Washington";
 <a name="use-the-same-vocabulary-for-the-same-type-of-variable"></a>
 ### Use the same vocabulary for the same type of variable
 
-It will help you to not question if the correct function is getUser or getClient. I saw databases where the name if the ID of the same logic item (a location) is different in every table. You don't want to work with that database.
+It will help you to not question if the correct function is getUser or getClient. I saw databases where the name of the ID of the same logic item (a location) is different in every table. You don't want to work with that database.
 
 **Bad:**
 ```javascript
@@ -137,7 +136,7 @@ getUser();
 
 <a name="use-names-instead-of-magic-values"></a>
 ### Use names instead of magic values
-We will read more code than we will ever write. It's important that the code we do write is readable and searchable. By *not* naming variables that end up being meaningful for understanding our program, we hurt our readers. Make your names searchable.
+We will read more code than we will ever write. It's important the code we write to be readable and searchable. By *not* giving meaningful names to the variables for understanding our program, we hurt our readers (and you are the first reader). Make your names searchable.
 
 **Bad:**
 ```javascript
@@ -175,7 +174,7 @@ socket.timeout = CLIENT_DISCONNECT_TIMEOUT;
 <a name="use-explanatory-variables"></a>
 ### Use explanatory variables
 
-When we create long statements with several operations in it becomes difficult to follow what is happening there without stop to it. Only putting some variables in the middle can provide us the contextual information to not need to decipher what is happening.
+When we create long statements with several operations in it becomes difficult to follow what is happening there without stop to think. Splitting the login in some well named variables can provide us the contextual information to davoid to decipher what is happening.
 
 **Bad:**
 ```javascript
@@ -197,11 +196,11 @@ saveCityState(city, state);
 
 <a name="avoid-mental-mapping"></a>
 ### Avoid Mental Mapping
-This is basically the same as the [first point](#use-meaningful-and-pronounceable-variable-names)
+This is basically the same as [first point](#use-meaningful-and-pronounceable-variable-names).
 
 **Bad:**
 ```javascript
-var locations = ['Austin', 'New York', 'San Francisco'];
+const locations = ['Austin', 'New York', 'San Francisco'];
 
 locations.forEach((l) => {
 	doStuff();
@@ -216,7 +215,7 @@ locations.forEach((l) => {
 
 **Good**:
 ```javascript
-var locations = ['Austin', 'New York', 'San Francisco'];
+const locations = ['Austin', 'New York', 'San Francisco'];
 
 locations.forEach((location) => {
 	doStuff();
@@ -234,7 +233,7 @@ If your class/object name tells you something, don't repeat that in your variabl
 
 **Bad:**
 ```javascript
-var Car = {
+const Car = {
 	carMake: 'Honda',
 	carModel: 'Accord',
 	carColor: 'Blue'
@@ -247,7 +246,7 @@ function paintCar(car) {
 
 **Good**:
 ```javascript
-var Car = {
+const Car = {
 	make: 'Honda',
 	model: 'Accord',
 	color: 'Blue'
@@ -291,11 +290,11 @@ car.stop();
 <a name="simple-conditional-guard-clause-and-short-circuiting-are-cleaner-than-conditionals"></a>
 ### Simple conditional, guard clause and short-circuiting are cleaner than conditionals
 
-`if else if else else` is hard to read and understand, better use other tactics that avoid this complexity.
+`if else if else else` is hard to read and understand, better use other tactics that avoids this complexity.
 
-- short-circuiting allows to have in one line the variable and the default value. **But! If you are going to use it, maybe is better to use [ES6 default values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters)**.
-- simple conditional makes cleaner the code and is read like a correction over the normal behavior instead of a complex logic. And makes explicit what is a normal behavior and and what not.
-- guard clause simplifies the logic when we want to execute the default behavior only in some cases.
+- `short-circuiting` allows you to have in one line the variable and the default value. **But! If you are going to use it, maybe is better to use [ES6 default values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters)**.
+- `simple conditional` makes cleaner the code and is read like a correction over the normal behavior instead of a complex logic. Moreover, it makes explicit what is a normal behavior and what isn't.
+- `guard clause` simplifies the logic when we want to execute the default behavior only in some cases.
 
 **Bad:**
 ```javascript
@@ -354,22 +353,20 @@ You can find other example of guard clause from Martin Fowler [here](https://ref
 
 **[⬆ back to top](#table-of-contents)**
 
-<a name="function-arguments-2-or-less-ideally"></a>
-
 <a name="functions"></a>
 ## Functions
 <a name="function-arguments-2-or-less-ideally"></a>
 ### Function arguments (2 or less ideally)
 
-Having a function with many arguments is a smell that indicated that maybe you need some refactoring for avoiding all this arguments. Moreover makes harder to test (more combinations for input) and to work with optional parameters. Some patterns that you can apply in order of preference are:
+Having a function with many arguments is a smell that indicated that maybe you need some refactoring. Moreover, it makes harder to test (more combinations for input) and to work with optional parameters. Some patterns that you can apply in order of preference are:
 
-- **Simply split the function in several function**: If your function have to many arguments maybe that means that you can split its logic in several functions.
+- **Simply split the function in several function**: If your function have too many arguments maybe that means that you can split its logic in several functions.
 - **Builder pattern**: Can help you when you need to pass a lot of optional arguments for constructing something (in the constructor or similar entity)
-- **Define a model or data class**: That will group your data in a object. Having it defined as a Class will make the convention explicit and easy to read in the future.
+- **Define a model or data class**: That will group your data in an object. Having it defined as a Class will make the convention explicit and easy to consult for you and others in the future.
 
 Thing that you must **NOT** do:
 
-- Making the function to receive only one argument expecting to be an object without any type and assuming some properties inside of that object (understanding "any type" as not model or data class forcing the developer to create a ad-hod object for passing several parameters to the function). This will force the developer to read the code of the function for knowing what your function requires. This is simple not acceptable and will bring you a lot of pain and a not very friendly big [Russian guy](#introduction). If you do that I hope you love the smell of napal in the morning when you have 20 calls to this function from several parts of the code base giving totally different objects as argument.
+- Making the function to receive only one argument, expecting to be an object without any type and assuming some properties inside of that object (understanding "any type" as not model or data class, forcing the developer to create an ad-hod object for passing several parameters to the function). This will force the developer to read the code of the function for knowing what requires your function. This is simply not acceptable and will bring you a lot of pain and a not very friendly big [Russian guy](#introduction). If you do that I hope you love the smell of napal in the morning when you have 20 calls to the same function from several parts of the project giving totally different objects as argument.
 
 **Bad (builder pattern):**
 ```javascript
@@ -447,9 +444,9 @@ createMenu(menuConfig);
 
 <a name="functions-should-only-be-one-level-of-abstraction"></a>
 ### Functions should only be one level of abstraction
-When you have more than one level of abstraction your function is usually doing too much. Splitting up functions leads to reusability and easier testing.
+When you have more than one level of abstraction your function is doing too much. Splitting up functions leads to reusability and easier testing.
 
-I really advice to step back and do some little refactors regularly for extracting logic from functions. I tried to modify a function of 200 lines and 13 indentation levels and I needed to expend 2 days first refactoring it (and no, is not fun).
+I really advice to step back and do some little refactors regularly for extracting logic from functions. I tried to modify a function of 200 lines and 13 indentation levels and I needed to expend 2 days refactoring it before starting (and no, is not fun).
 
 **Bad:**
 ```javascript
@@ -512,9 +509,9 @@ function create() {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-<a name="remove-duplicate-code"></a>
-### Remove duplicate code
-Never ever, ever, under any circumstance, have duplicate code. It ends with several parts of the code with different versions of the same logic that is altered by different developers that forget to update the other duplicates. And that, my friend, is not something that you want. Extract the common logic in a function that other functions can use.
+<a name="remove-duplicate-code-dry-dont-repeat-yourself"></a>
+### Remove duplicate code (DRY Don't repeat yourself)
+Never ever, ever, under any circumstance, create duplicate code. It ends with several parts of the code with different versions of the same logic altered by different developers that forget to update the other duplicates. And that, my friend, is not something that you want. Extract the common logic in a function that other functions can use.
 
 **Bad:**
 ```javascript
@@ -559,6 +556,7 @@ getWorker(type){
 	worker.setExpectedSalary(expectedSalary);
 	worker.setExperience(experience);
 
+	//This ifs should be refactored in some kind of lightweight command pattern
 	if(type === WORKER_TYPE_DEVELOPER){
 		let githubLink = developer.getGithubLink();
 		worker.setGithubLink(githubLink);
@@ -591,7 +589,7 @@ function showDeveloperList(developers) {
 <a name="set-default-objects-with-objectassign"></a>
 ### Set default objects with Object.assign
 
-It create a new Object with the attributes of the first one and overwrite them with the attributes of the second one. [Read about it](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign).
+It creates a new Object with the attributes of the first one and overwrite them with the attributes of the second one. [Read about it](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign).
 
 **Bad:**
 ```javascript
@@ -633,7 +631,7 @@ createMenu(menuConfig);
 
 <a name="dont-use-flags-as-function-parameters"></a>
 ### Don't use flags as function parameters
-Flags tell your user that this function does more than one thing. Functions should do one thing. Split out your functions if they are following different code paths based on a boolean. Moreover, remember to extract the common logic between both function for not ending having code duplication.
+Flags tell you that the function does more than one thing. Functions should do only one thing. Split your functions if they are following different code paths based on a boolean. Moreover, remember to extract the common logic between both function for not ending having code duplication.
 
 **Bad:**
 ```javascript
@@ -660,11 +658,11 @@ function createFile(name) {
 
 <a name="avoid-side-effects"></a>
 ### Avoid Side Effects
-A function produces a side effect if it does anything other than take a value in and return another value or values. A side effect could be writing to a file, modifying some global variable, or accidentally wiring all your money to a Russian guy.
+A function produces a side effect if it does anything other than take values and returning another value. A side effect could be writing to a file, modifying some global variable, or accidentally wiring all your money to a Russian guy.
 
-Now, you do need to have side effects in a program in some occasions. Like the previous example, you might need to write to a file. What you want to do is to centralize where you are doing this. Don't have several functions and classes that write to a particular file. Have one service that does it. One and only one.
+Now, you do need to have side effects in a program in some occasions. Like the previous example, you might need to write to a file. What you should to do is to centralize where you are doing this. Better to have one service that centralizes the access to a file instead of several classes that write all in the same file.
 
-The main point is to avoid common pitfalls like sharing state between objects without any structure, using mutable data types that can be written to by anything, and not centralizing where your side effects occur. This is very related with [no code duplication](remove-duplicate-code).
+The main point is to avoid common pitfalls like sharing state between objects without any structure, using mutable data types that can be written to by anything, and not centralizing where your side effects occur. This is very related with [no code duplication](#remove-duplicate-code-dry-dont-repeat-yourself).
 
 **Bad:**
 ```javascript
@@ -697,7 +695,7 @@ console.log(newName); // ['Ryan', 'McDermott'];
 
 <a name="dont-write-to-global-functions"></a>
 ### Don't write to global functions
-Polluting globals is a bad practice in JavaScript because you could clash with another library and the user of your API would be none-the-wiser until they get an exception in production. Let's think about an example: what if you wanted to extend JavaScript's native Array method to have a `diff` method that could show the difference between two arrays? You could write your new function to the `Array.prototype`, but it could clash with another library that tried to do the same thing. What if that other library was just using `diff` to find the difference between the first and last elements of an array? This is why it would be much better to just use ES6 classes and simply extend the `Array` global.
+Polluting globals is a bad practice in JavaScript because you could clash with another library and the user of your API would suffer the conflicts. Let's think about an example: what if you wanted to extend JavaScript's native Array method to have a `diff` method that could show the difference between two arrays. You could write your new function to the `Array.prototype`, but it could clash with another library that tried to do the same thing. What if that other library was just using `diff` to find the difference between the first and last elements of an array? This is why it would be much better to just use ES6 classes and simply extend the `Array` global. This is a good example of when inheritances is good. (We will speak about it after)
 
 **Bad:**
 ```javascript
@@ -748,7 +746,7 @@ class SuperArray extends Array {
 
 <a name="favor-functional-programming-over-imperative-programming"></a>
 ### Favor functional programming over imperative programming
-Functional programming is a complex topic, but the little ads that JavaScript includes of it will help you to have better code. Keep in mind that it requires a little change on the thinking way. Doing it "a la functional" will help you to automatically apply some rules in this document ([Like no side effects](avoid-side-effects)).
+Functional programming is a complex topic, but the little adds that JavaScript includes of it will help you to have better code. Keep in mind that it requires a little change on the thinking way. Doing it "a la functional" will help you to automatically apply some rules in this document ([Like no side effects](avoid-side-effects)).
 
 **Bad:**
 ```javascript
@@ -808,7 +806,7 @@ if (shouldShowSpinner) {
 ```
 
 **Good (if the same conditional is shared between functions)**:
-Remember, [no code duplication](remove-duplicate-code).
+Remember, [no code duplication](#remove-duplicate-code-dry-dont-repeat-yourself).
 
 ```javascript
 function shouldShowSpinner(fsm, listNode) {
@@ -850,7 +848,7 @@ if (isDOMNodeMissing(node)) {
 <a name="avoid-conditionals"></a>
 ### Avoid conditionals
 This seems like an impossible task. Upon first hearing this, most people say, "how am I supposed to do anything without an `if` statement?" The answer is that you can use composition to achieve the same task in many cases. The second question is usually, "well that's great but why would I want to do that?" The answer is a previous clean code concept we learned: a function should only do one thing. When you have classes and functions that have `if` statements, you are telling your user that your function does more than one thing. Remember,
-just do one thing.
+try to do just one thing.
 
 **Bad:**
 ```javascript
@@ -886,74 +884,9 @@ class Airplane {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-
-<a name="prefer-composition-over-inheritance"></a>
-### Prefer composition over inheritance
-
-Inheritance and composition are totally different direction when building the logic. In inheritance is the children who say what logic is going to maintain and to overwrite from the "logic pool" that is the father. In composition is the father that receive some worker children(yeah, I know), that he don't know who they are, and he command them to do the "main logic". The childrens will take care of the details. 
-
-That means that is you want to update some minor logic, just exchange the children for others (Yeah, it sounds horrible). Very good for testing with mock-ups. For example, in conjunction with a Dependency Injector and following the inverse dependency principle from SOLID allows to have change my amqplib dependency by a simple mock, removing RabbitMQ as a external dependency.
-
-**Bad**:
-```javascript
-class Airplane {
-  //...
-}
-
-class Boeing777 extends Airplane {
-  //...
-  getCruisingAltitude() {
-	return getMaxAltitude() - getPassengerCount();
-  }
-}
-
-class AirForceOne extends Airplane {
-  //...
-  getCruisingAltitude() {
-	return getMaxAltitude();
-  }
-}
-
-class Cessna extends Airplane {
-  //...
-  getCruisingAltitude() {
-	return getMaxAltitude() - getFuelExpenditure();
-  }
-}
-```
-
-**Good**:
-```javascript
-//a function, a require, a list, etc. Just the association with type and the logic.
-AltitudeCalculators = loadAltitudeCalculators();
-
-class AirplaneFactory() {
-	static create(type) {
-		if(!AltitudeCalculators[type])
-			throw new Error('No airplane of type ' + type);
-		
-		altitudeCalculator = AltitudeCalculators[type];
-
-		return new Airplane(type, altitudeCalculator);
-	}
-}
-
-class Airplane {
-	constructor(type, altitudeCalculator){
-		//altitudeCalculator is give to the Airplane in the construction phase. That means that you need a AitplaneFactory for selecting the correct altitudeCalculator
-		this.altitudeCalculator = altitudeCalculator;
-	}
-	getCruisingAltitude() {
-		this.altitudeCalculator.get();
-	}
-}
-
-const airplane = AirplaneFactory.create(AIRPLANE_TYPE.CESSNA);
-```
-
 <a name="avoid-type-checking-part-1"></a>
 ### Avoid type-checking (part 1)
-JavaScript is untyped, which means your functions can take any type of argument. Sometimes you are bitten by this freedom and it becomes tempting to do type-checking in your functions. There are many ways to avoid having to do this. The first thing to consider is consistent APIs.
+JavaScript is untyped, which means your functions can take any type of argument. Having this freedom tempt you to do type-checking in your functions. There are many ways to avoid having to do this. The first thing to consider is consistent APIs.
 
 **Bad:**
 ```javascript
@@ -978,7 +911,7 @@ function travelToTexas(vehicle) {
 
 **NOTE**: If you are working with basic primitive values like strings, integers, and arrays, and you can't get over the multi-type functions, you can try TypeScript. It is an excellent alternative to normal JavaScript, as it provides you with static typing on top of standard JavaScript syntax. 
 
-If not, keep your JavaScript, clean, write good tests, and have good code reviews. Provably there you will find the way to have function that only need to accept one type.
+If not, keep your JavaScript, clean, write good tests, and have good code reviews and frequent refactors. Provably there you will find the way to have function that only need to accept one type.
 
 **[⬆ back to top](#table-of-contents)**
 
@@ -992,14 +925,14 @@ Modern browsers do a lot of optimization under-the-hood at runtime. A lot of tim
 // On old browsers, each iteration would be costly because `len` would be
 // recomputed. In modern browsers, this is optimized.
 for (var i = 0, len = list.length; i < len; i++) {
-  // ...
+	// ...
 }
 ```
 
 **Good**:
 ```javascript
 for (var i = 0; i < list.length; i++) {
-  // ...
+	// ...
 }
 ```
 **[⬆ back to top](#table-of-contents)**
@@ -1157,7 +1090,7 @@ class AjaxRequester {
 ### Liskov Substitution Principle (LSP)
 This is a scary term for a very simple concept. It's formally defined as "If S is a subtype of T, then objects of type T may be replaced with objects of type S (i.e., objects of type S may substitute objects of type T) without altering any of the desirable properties of that program (correctness, task performed, etc.)." That's an even scarier definition.
 
-The best explanation for this is if you have a parent class and a child class, then the base class and child class can be used interchangeably without getting incorrect results. This might still be confusing, so let's take a look at the classic Square-Rectangle example. Mathematically, a square is a rectangle, but if you model it using the "is-a" relationship via inheritance, you quickly get into trouble.
+The best explanation for this is if you have a parent class and a child class, then the parent class and child class can be used interchangeably without getting incorrect results. This might still be confusing, so let's take a look at the classic Square-Rectangle example.
 
 **Bad:**
 ```javascript
@@ -1311,7 +1244,7 @@ JavaScript doesn't have interfaces so this principle doesn't apply as strictly a
 
 ISP states that "Clients should not be forced to depend upon interfaces that they do not use." Interfaces are implemented as contracts in JavaScript with Builder patterns, models, and other tactics because of duck typing.
 
-A good example to look at that demonstrates this principle in JavaScript is for classes that require large settings objects. Not requiring clients to setup huge amounts of options is beneficial, because most of the time they won't need all of the settings. Making them optional helps prevent having a "fat interface".
+A good example that demonstrates this principle in JavaScript, is when we have classes that require large settings objects. Not requiring clients to setup huge amounts of options is beneficial, because most of the time they won't need all of the settings. Making them optional helps prevent having a "fat interface".
 
 **Bad:**
 ```javascript
@@ -1364,9 +1297,9 @@ This principle states two essential things:
 1. High-level modules should not depend on low-level modules. Both should depend on abstractions.
 2. Abstractions should not depend upon details. Details should depend on abstractions.
 
-This can be hard to understand at first, but if you've worked with Angular.js, you've seen an implementation of this principle in the form of Dependency Injection (DI). While they are not identical concepts, DIP keeps high-level modules from knowing the details of its low-level modules and setting them up. It can accomplish this through DI. A huge benefit of this is that it reduces the coupling between modules. Coupling is a very bad development pattern because it makes your code hard to refactor/update/extend.
+This can be hard to understand at first, but if you worked with Angular.js, you seen an implementation of this principle in the form of Dependency Injection (DI). While they are not identical concepts, DIP keeps high-level modules from knowing the details of its low-level modules and setting them up. It can accomplish this through DI. A huge benefit of this is that it reduces the coupling between modules. Coupling is a very bad development pattern because it makes your code hard to refactor/update/extend.
 
-As stated previously, JavaScript doesn't have interfaces so the abstractions that are depended upon are implicit contracts. That is to say, the methods and properties that an object/class exposes to another object/class. In the example below, the implicit contract is that any Request module for an `InventoryTracker` will have a `requestItems` method.
+As stated previously, JavaScript doesn't have interfaces so the abstractions that are depended upon are implicit contracts. That is to say, the methods and properties that an object/class exposes to another object/class. In the example below, the implicit contract is that any Request module for an `InventoryTracker` will have a `request` method.
 
 **Bad:**
 ```javascript
@@ -1514,13 +1447,17 @@ class Human extends Mammal {
 ```
 **[⬆ back to top](#table-of-contents)**
 
-<a name="prefer-composition-over-inheritance-1"></a>
+<a name="prefer-composition-over-inheritance"></a>
 ### Prefer composition over inheritance
 As stated famously in [*Design Patterns*](https://en.wikipedia.org/wiki/Design_Patterns) by the Gang of Four, you should prefer composition over inheritance where you can. There are lots of good reasons to use inheritance and lots of good reasons to use composition. The main point for this maxim is that if your mind instinctively goes for inheritance, try to think if composition could model your problem better. In most of the cases it can.
 
-You might be wondering then, "when should I use inheritance?" It depends on your problem at hand.
+Inheritance and composition are totally different direction when building the logic. In inheritance is the children who say what logic is going to overwrite from the "logic pool" that is the father. In composition is the father that receive some worker childrens (yeah, I know), that he don't know who they are, and he command them to do the "main logic". The childrens will take care of the details. 
 
-It depends of the way to structure your application. One error is to think that Inheritance is about code reuse, when is about extensibility and identification. If you want to share code between classes, composition is your tool. If you want to update only one detail of an existent class in a way that you are sure it never will be affected by the base class modifications (that means, is 100% compatible with the contract of this class), then inheritance is your way. But, be aware, mostly sure you will be programming something that requires composition and not inheritance. That's why the principle "[composition over inheritance](https://www.thoughtworks.com/insights/blog/composition-vs-inheritance-how-choose)"
+That means that is you want to update some minor logic, just exchange the children for others (Yeah, it sounds horrible). Very good for testing with mock-ups. For example, in conjunction with a Dependency Injector and following the inverse dependency principle from SOLID, it allows to change my amqplib dependency by a simple mock, removing RabbitMQ as a external dependency.
+
+You might be wondering then, "when should I use inheritance?". (A good example of when to use inheritance [is this](#dont-write-to-global-functions))
+
+It depends of the way to structure your application. One error is to think that Inheritance is about code reuse, when is about extensibility and identification. If you want to share code between classes, composition is your tool. If you want to update only one detail of an existent class in a way that you are sure it will never be affected by the base class modifications (that means, is 100% compatible with the contract of this class), then inheritance is your way. But, be aware, mostly sure you will be programming something that requires composition and not inheritance. That's why the principle "[composition over inheritance](https://www.thoughtworks.com/insights/blog/composition-vs-inheritance-how-choose)"
 
 Dogmas are bad, but using tools in wrong ways in a project that is going to wrong can make disasters.
 
@@ -1566,19 +1503,76 @@ class Employee {
 ```
 **[⬆ back to top](#table-of-contents)**
 
+**Bad**:
+```javascript
+class Airplane {
+  //...
+}
+
+class Boeing777 extends Airplane {
+  //...
+  getCruisingAltitude() {
+	return getMaxAltitude() - getPassengerCount();
+  }
+}
+
+class AirForceOne extends Airplane {
+  //...
+  getCruisingAltitude() {
+	return getMaxAltitude();
+  }
+}
+
+class Cessna extends Airplane {
+  //...
+  getCruisingAltitude() {
+	return getMaxAltitude() - getFuelExpenditure();
+  }
+}
+```
+
+**Good**:
+```javascript
+//a function, a require, a list, a repository, etc.
+AltitudeCalculators = loadAltitudeCalculatorsRepository();
+
+class AirplaneFactory() {
+	static create(type) {
+		if(!AltitudeCalculators[type])
+			throw new Error('No airplane of type ' + type);
+		
+		altitudeCalculator = AltitudeCalculators[type];
+
+		return new Airplane(type, altitudeCalculator);
+	}
+}
+
+class Airplane {
+	constructor(type, altitudeCalculator){
+		//altitudeCalculator is give to the Airplane in the construction phase. That means that you need a AitplaneFactory for selecting the correct altitudeCalculator
+		this.altitudeCalculator = altitudeCalculator;
+	}
+	getCruisingAltitude() {
+		this.altitudeCalculator.get();
+	}
+}
+
+const airplane = AirplaneFactory.create(AIRPLANE_TYPE.CESSNA);
+```
+
 <a name="testing"></a>
 ## Testing
 
-Testing is more important than shipping. If you have no tests or an inadequate amount, then every time you ship code you won't be sure that you didn't break anything. Deciding on what constitutes an adequate amount is up to your team, but having 100% coverage (all statements and branches) is how you achieve very high confidence and developer peace of mind. This means that in addition to having a great testing framework, you also need to use a [good coverage tool](http://gotwarlost.github.io/istanbul/).
+Testing can be the most important step in your development. If you have no tests or an inadequate amount, then every time you ship code you won't be sure that you didn't break anything. Choosing what constitutes an adequate amount is up to your team, but having 100% coverage (all statements and branches) is how you achieve very high confidence and developer peace of mind. This means that in addition to having a great testing framework, you also need to use a [good coverage tool](http://gotwarlost.github.io/istanbul/).
 
 There's no excuse to not write tests. There's [plenty of good JS test frameworks](http://jstherightway.org/#testing-tools), so find one that your team prefers. When you find one that works for your team, then aim to always write tests for every new feature/module you introduce. If your preferred method is Test Driven Development (TDD), that is great, but the main point is to just make sure you are reaching your coverage goals before launching any feature, or refactoring an existing one.
 
-You will find that in the test face you discover a lot of bugs and that making test will made you think how to destroy your program, and believe me, that will save you. But more important, with tests you don't need to check if your code breaks something, test tell you and you can refactor without any problem.
+You will find that in the test phase you will discover a lot of bugs and tests will make you think how to destroy your program. And believe me, that will save you. But more important, with tests you don't need to check if your code breaks something, test tell you and you can refactor without worry.
 
 <a name="single-concept-per-test"></a>
 ### Single concept per test
 
-Having an UNI-TEST™ will make difficult to know where the problem was. Split the test in several concepts / rules in a way that when something fail, only knowing the test you will be able to go to fix the code.  
+Having an only UNI-TEST™ will make difficult to know where the problem was. Split the test in several concepts / rules in a way that when something fail, only knowing the test you will be able to go where the problem is in the code.  
 
 **Bad:**
 ```javascript
@@ -1656,7 +1650,8 @@ require('request').get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin', (req
 
 **Good**:
 ```javascript
-require('request-promise').get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
+require('request-promise')
+.get('https://en.wikipedia.org/wiki/Robert_Cecil_Martin')
 .then(response => require('fs-promise').writeFile('article.html', response))
 .then(() => console.log('File written'))
 .catch(err => console.error(err))
@@ -1702,14 +1697,11 @@ async function getCleanCodeArticle() {
 <a name="error-handling"></a>
 ## Error handling
 
-Thrown errors are a good thing! They mean the runtime has successfully
-identified when something in your program has gone wrong and it's letting
-you know by stopping function execution on the current stack, killing the
-process (in Node), and notifying you in the console with a stack trace.
+Thrown errors are a good thing! They mean the runtime has successfully identified when something in your program has gone wrong and it's letting you know by stopping function execution on the current stack, killing the process (in Node), and notifying you in the console with a stack trace.
 
 Every error well launched & handled with a good message means less hours of debugging (yes, in plural). Using the errors correctly means to have different layers, someone that handle this error, good logging system (the terminal is ok, depending of the size of the project), good system for identify them, and the most important:
 
-**IF YOUR CODE USES PROMISES/AWAIT USE THE FUCKING .CATCH/TRY-CATCH AND WHEN YOU USE THEM, DONT JUST USE EMPTY FUNCTION, LOOG THE ERROR**. Loosing an error or having a silent one can be a bill that is not payed, a developer that will expend hours debugging trying to understand why a silent error happens or a boos that will get on nerves and yielding you because no one is able to explain wtf if happening. 
+**IF YOUR CODE USES PROMISES/AWAIT USE THE FUCKING .CATCH/TRY-CATCH AND WHEN YOU USE THEM, DONT JUST USE EMPTY FUNCTION, LOOG THE ERROR**. Loosing an error or having a silent one can be a bill that is not payed, a developer that will expend hours debugging trying to understand why a silent error happens or a Boss that will get on nerves and yielding you because no one is able to explain wtf if happening. 
 
 
 **Bad:**
@@ -1756,7 +1748,7 @@ getdata()
 <a name="formatting"></a>
 ## Formatting
 
-Formatting is subjective. Like many rules herein, there is no hard and fast rule that you must follow. The main point is DO NOT ARGUE over formatting. There are tons of tools to automate this. Use one! It's a waste of time and money for engineers to argue over formatting.
+Formatting is subjective. The main point is DO NOT ARGUE over formatting. There are tons of tools to automate this. Use one! It's a waste of time and money for engineers to argue over formatting.
 
 For things that don't fall under the purview of automatic formatting (indentation, tabs vs. spaces, double vs. single quotes, etc.) look here for some guidance.
 
